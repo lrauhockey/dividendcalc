@@ -30,14 +30,19 @@ with open('tickers.txt') as f:
                 #print(word, "found .UN")
                 URLcnbc = "https://www.cnbc.com/quotes/" + word + "-CA"
                 URLdiv = 'https://dividendhistory.org/payout/TSX/' + word
-                
+                canada = True
+            elif word.find(".U") >0 :
+                #need to find UN first .U is different
+                #need to strip off the .U vs keeping the .UN (bizarre case)
+                locforlen = word.find(".U")
+                URLcnbc = "https://www.cnbc.com/quotes/" + word + "-CA"
+                URLdiv = 'https://dividendhistory.org/payout/TSX/' + word[0:locforlen]
                 canada = True
             else:
                 #these are US
                 URLcnbc = "https://www.cnbc.com/quotes/" + word
                 URLdiv = 'https://dividendhistory.org/payout/' + word
                 canada = False
-            
             #Goto CNBC and get the Dividend and Name of stock 
             # Uncomment below if need to debug       
             #print(URLcnbc)
@@ -125,4 +130,4 @@ with open('tickers.txt') as f:
         except:
             #this is for all other errors - i have not found many but possible URLS may change etc.
             #print(word, pos, 'Some other problem')
-            print(word,", Not found or other error: ", sys.exc_info()[0], " occurred.")
+            print(word,", Not found or other error: ", sys.exc_info()[0], " occurred. URLcnbc:",URLcnbc)
