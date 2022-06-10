@@ -9,6 +9,7 @@ import sys
 dummy = 0
 month = datetime.now().month
 year = datetime.now().year
+
 #input_string = input("Enter Tickers separated by space: ")
 #words = input_string.split()
 #the text file here put your stock tickers one on each line
@@ -17,7 +18,10 @@ with open('tickers2.txt') as f:
     for line in f:
         try:
             word = line.strip()
-            
+            dummy = 1
+            URLinfo = 'https://www.dividendinformation.com/search_ticker/?identifier=' + word
+            #this is used below if not found and wanting to keep the try loops clean
+            divFound = True 
             if word.find(":") > 0 :
                 #need to setup URLS if in Canada
                 #Cananda URL for cnbc needs -ca and Divhistory needs TSX in it
@@ -73,6 +77,8 @@ with open('tickers2.txt') as f:
                 #Once you get the company Name (coname) and divident add to a line
                 #i could put in pandas dataframe but getting lazy
                 line = word + "," + coname + "," + dividenttext[0:dividendend]
+                
+
             #dont want to crush a server so kinda delay - you can set this how you like   
             #time.sleep(10)
 
@@ -90,11 +96,8 @@ with open('tickers2.txt') as f:
             page = requests.get(URLdiv)
             message = page.text
             pos = message.find("Stock does not exist")
-            if pos > 0:
-                #Put the URL in the debug line - this is how i figure out what is going on 
-                #also you can go into that line and request stock to be added! 
-               line = line + " Not in dividend history " + URL
-            else:   
+            #if pos > 0:
+            if pos == -1:
                 #I use beautiful soup for this HTML parsing (vs brute force for cnbc)
                 #what i do is find the divident table - and in htat table take the 2-5th rows
                 #its possible to have more/less and 2nd pages - you can edit to handle what you want
@@ -118,16 +121,55 @@ with open('tickers2.txt') as f:
                         line = line + "," + table_data[i][0] + "," + table_data[i][2]
                     else:
                         line = line + "," + table_data[i][0] + "," + table_data[i][2][:len(table_data[i][2])-2]
+            else:   
+                #This is not in Div history so try another site.... 
+                divFound = False
             #now that i have the info print the line
-            print(line)
-            sleep(10)
-
+            #print(line)
+            #sleep(10)
         except IndexError:
             #there are times there are <4 dividends in histroy - this catches and prints what is there 
-            print(line)
+            #print(line)
+            dummy = dummy + 1
+
+        except NameError as ne:
+            print(line, "name error:",ne)
             
 
-        except:
+        except Exception as e:
             #this is for all other errors - i have not found many but possible URLS may change etc.
             #print(word, pos, 'Some other problem')
-            print(word,", Not found or other error: ", sys.exc_info()[0], " occurred. URLcnbc:",URLcnbc)
+            print(line,", Not found or other error: ", sys.exc_info()[0], " occurred. URLcnbc:",URLcnbc, " - ", URLdiv)
+            print(e)
+        finally:
+            dummy = dummy +1 
+            #this is just a so i can clear the try catch
+        if divFound == False:
+            try:
+                page = requests.get(URLinfo)
+                message = page.text
+                soup = BeautifulSoup(message,'html.parser')
+                secondtable = soup.findAll('table')[3]
+
+                rows = secondtable.findAll("tr")
+
+                table_data = []
+                for row in rows:
+                    cols = row.findAll("td")
+                    cols = [ele.text.strip() for ele in cols]
+                    table_data.append(cols)
+                    #print(cols)
+            
+                for i in range(1,5):
+                    #Add to the line 
+                    line = line + "," + table_data[i][0] + "," + table_data[i][1]
+            except IndexError:
+            #there are times there are <4 dividends in histroy - this catches and prints what is there 
+                #print(line)
+                dummy = dummy + 1
+                #we know its erroy but its not bad... 
+            except Exception as e:
+                print(e, line)
+                #print(line)
+        print(line)
+        sleep(4)
