@@ -17,6 +17,9 @@ input_string = input("Enter Ticker symbols: ")
 words = input_string.split()
 for word in words:
     #for line in f:
+    dummy = 1
+    URLinfo = 'https://www.dividendinformation.com/search_ticker/?identifier=' + word
+    urlFound = True
     try:
         #word = line.strip()
         
@@ -78,14 +81,15 @@ for word in words:
         #dont want to crush a server so kinda delay - you can set this how you like   
         #time.sleep(10)
 
-    except AttributeError:
+    except AttributeError as a:
         #there are some errors that i ignore - this is one
         #print("Oops!", sys.exc_info()[0], "occurred.")
+        print(line, " - ", a)
         pass
-    except:
+    except Exception as e :
         #all other exerrors i write this out - the pos for me to debug the html
         print(word, pos, " exception not in cnn, ", URLcnbc)
-        print("Oops!", sys.exc_info()[0], "occurred.")
+        print("Oops!", e, "occurred.")
     try:
         #Now get div history - 
         #div history URL is used based on US/Canada 
@@ -95,7 +99,8 @@ for word in words:
         if pos > 0:
             #Put the URL in the debug line - this is how i figure out what is going on 
             #also you can go into that line and request stock to be added! 
-            line = line + " Not in dividend history " + URL
+            urlFound = False
+            #print("not in div history")
         else:   
             #I use beautiful soup for this HTML parsing (vs brute force for cnbc)
             #what i do is find the divident table - and in htat table take the 2-5th rows
@@ -121,15 +126,54 @@ for word in words:
                 else:
                     line = line + "," + table_data[i][0] + "," + table_data[i][2][:len(table_data[i][2])-2]
         #now that i have the info print the line
-        print(line)
-        sleep(10)
+        #print(line)
+        #sleep(10)
 
-    except IndexError:
+    except IndexError as i:
         #there are times there are <4 dividends in histroy - this catches and prints what is there 
-        print(line)
+        print(line, " index error ", i)
         
 
-    except:
+    except Exception as e:
         #this is for all other errors - i have not found many but possible URLS may change etc.
         #print(word, pos, 'Some other problem')
-        print(word,", Not found or other error: ", sys.exc_info()[0], " occurred. URLcnbc:",URLcnbc)
+        print(word,", Not found or other error: ", e, " occurred. URLcnbc:",URLcnbc)
+    
+    if urlFound == False: 
+        #print("search in div info")
+        #then try dividend info 
+        try:
+            page = requests.get(URLinfo)
+            message = page.text
+            soup = BeautifulSoup(message,'html.parser')
+            pos1 = message.find("Ticker not found")
+            if pos1 > 0 :
+                line = line + "," + "Not found in either history table"
+
+            else:
+                secondtable = soup.findAll('table')[3]
+
+                rows = secondtable.findAll("tr")
+
+                table_data = []
+                for row in rows:
+                    cols = row.findAll("td")
+                    cols = [ele.text.strip() for ele in cols]
+                    table_data.append(cols)
+                    #print(cols)
+            
+                for i in range(1,5):
+                    #Add to the line 
+                    line = line + "," + table_data[i][0] + "," + table_data[i][1]
+        except IndexError as i:
+        #there are times there are <4 dividends in histroy - this catches and prints what is there 
+            #print(line)
+            #print(line, " - ", i)
+            line = line + "," + "no more data"
+            dummy = dummy + 1
+            #we know its erroy but its not bad... 
+        except Exception as e:
+            print(e, line)
+            #print(line)
+    print(line)
+
