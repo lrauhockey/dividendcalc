@@ -17,3 +17,9 @@ A sample google sheet with other people's portfolios can be found here
 https://l.facebook.com/l.php?u=https%3A%2F%2Fdocs.google.com%2Fspreadsheets%2Fd%2F1yjUxy_y3fqiKX7a8ayeOsyobhsxW5d5Hcrg9eKAFCfk%2Fedit%3Fusp%3Dsharing%26fbclid%3DIwAR2sW2hHkQpbC7qYdfufwvRo30MVaJ37cqloyQUed1mG4OFEGZ6a_WCXYMs&h=AT2gW2SxDZ-ez1ScS1crDKphPHQUj3fxeKa9uii1Xlfq6Sz6eU6JHfE4orE7OyFnoRwIXv50ZazG7E86pLZNj3Nx-9oD1cmhzaRXlBycQF1ND4jYnaURd6WWGXUW9tJC59Tg5LM&__tn__=-UK-R&c[0]=AT3a8fHh6on8bs2JvUweTPpwgjEF_N0U1Bd7b8OgaMmfa-2ISqCn-a_zQCBVvQc1H5PNcgV0EEUcYKU2BJolNUuYWCLlTVinGcU39BpY0dYmMX_qp5DGy-dbkWESK94sUjiuB2swN6YYlPqm1d4Yl1DhGKhswaj0QuA
 
 This sheet has the divident kings, a 640k portfolio from Youtube, and a saftey portfolio posted on facebook.  Again These are not my holdings and should not be used as investment advice.  They are just samples for you to have some fun with.
+
+Added a few new files (2 that are the same but just broke up functions so i can extend/add functionality) and started using pandas to parse the tables of HTML - which is much simpler than the old way..  
+
+BestTimetoBy.py.   This is some fun I am having, this gives you and AVERAGE date - of when the price of a stock is the lowest.  Note I use yFinance for the stock quotes - if you abuse it yahoo could kill you.  I also use dividendhistory.org for dividends - i did this as it has frequency info and future dividends which I might use.   I could do this all in yFinance - and may update it at a later time.
+
+To-Do put the hole BestTimeToBy in try/except right now I want to play and see the errors.  Please note right now not supporting Canadian stocks (dividend history URL would need to be updated as per the other apps) 
