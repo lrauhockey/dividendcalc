@@ -214,6 +214,7 @@ def getInfoGoog(URLgoog):
             #print(df.head())
             if len(df) < 4:
                 df_len = len(df)
+                df_top = df
                 infofound = True 
             else:
                 df_len = 4
@@ -239,7 +240,7 @@ stock_list = []
 input_string = input("Enter Ticker symbols: ")
 words = input_string.split()
 #debug more - check the list or dont check the list 
-debug = True
+debug = False
 stockfile = "current.txt"
 with open(stockfile) as f:
    for line in f:
