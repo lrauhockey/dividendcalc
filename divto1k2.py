@@ -240,7 +240,7 @@ stock_list = []
 input_string = input("Enter Ticker symbols: ")
 words = input_string.split()
 #debug more - check the list or dont check the list 
-debug = False
+debug = True
 stockfile = "current.txt"
 with open(stockfile) as f:
    for line in f:
