@@ -42,6 +42,8 @@ https://medium.com/@jb.ranchana/write-and-append-dataframes-to-google-sheets-in-
 Sorry why re-write what someone did... 
 On the copied spreadsheet you need to make sure you do step 3 (share your spreadsheet with your ID) 
 
+Note sto.py is something i need to figure out what to do with (why its still here)
+
 Things for me to do..
 Add stuff like get future dividend information from dividend history 
 Error Handling 
